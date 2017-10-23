@@ -18,13 +18,18 @@ class RegistryTests: XCTestCase {
 
 
     func testRegistryCount() {
-        let Registry = Woodpecker.Registry()
-        XCTAssertEqual(0, Registry.count())
+        let registry = Woodpecker.Registry()
+        registry.register(name: "count", instrument: Counter())
+        XCTAssertEqual(1, registry.count())
     }
 
     func testRegistrySnapshot() {
-        let Registry = Woodpecker.Registry()
-        let snapshot = Registry.snapshot()
-        XCTAssertEqual(0, snapshot.count)
+        let registry = Woodpecker.Registry()
+        let counter = Counter()
+        registry.register(name: "count", instrument: counter)
+        let snapshot = registry.snapshot()
+        XCTAssertEqual(1, snapshot.count)
+        XCTAssertEqual(0, registry.count())
+        XCTAssert(snapshot.contains { key, value in key == "count" })
     }
 }

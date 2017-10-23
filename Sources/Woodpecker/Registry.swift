@@ -17,8 +17,11 @@ class Registry {
     // Take a snapshot.
     public func snapshot() -> [String: Instrument] {
         semaphore.wait()
-        defer { semaphore.signal() }
-
+        defer {
+            instruments.removeAll()
+            semaphore.signal()
+        }
+        
         return instruments
     }
 
