@@ -38,17 +38,42 @@ protocol Sample: Instrument {
     func snapshot() -> [Int64]
 }
 
+/**
+ Counter holds a counter that can be incremented or decremented.
+ */
 class Counter: Discrete {
     var count = AtomicInt64()
 
+    /**
+     Returns an new Counter starting at the zero value.
+     */
     init() {
         count.initialize(0)
     }
+    
+    /**
+     Returns an new Counter starting at the given value.
+     
+     - parameters:
+         - value: The starting value of the counter.
+     */
+    init(_ value: Int64) {
+        count.initialize(value)
+    }
 
+    /**
+     Increments the counter by one.
+     */
     func increment() {
         count.increment()
     }
 
+    /**
+     Increments the counter by the given value.
+     
+     - parameters:
+         - by: The value to which increment or decrement the counter.
+     */
     func increment(_ by: Int64) {
         count.add(by)
     }
