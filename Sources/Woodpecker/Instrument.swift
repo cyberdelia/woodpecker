@@ -6,13 +6,35 @@ import Dispatch
     import let CDispatch.NSEC_PER_SEC
 #endif
 
+/**
+ Instrument represents a generic instrument.
+ */
 protocol Instrument {}
 
+
+/**
+ Discrete represents an instrument returning a discrete Int64 value.
+ */
 protocol Discrete: Instrument {
+    /**
+     Returns the observed value for this time interval.
+     
+     - Important: Calling method will reset the instrument
+     - returns: The observed value for this time interval
+     */
     func snapshot() -> Int64
 }
 
+/**
+ Sample represents an instruments returning a sample of values.
+ */
 protocol Sample: Instrument {
+    /**
+     Returns the observed values for this time interval.
+     
+     - Important: Calling this method will reset the instrument
+     - returns: The observed values for this time interval
+     */
     func snapshot() -> [Int64]
 }
 
