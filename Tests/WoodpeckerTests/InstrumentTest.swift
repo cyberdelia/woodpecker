@@ -18,7 +18,7 @@ class InstrumentTests: XCTestCase {
         ("testReservoirOverflow", testReservoirOverflow),
         ("testTiming", testTiming)
     ]
-    
+
     override func setUp() {
         super.setUp()
     }
@@ -41,7 +41,7 @@ class InstrumentTests: XCTestCase {
         gauge.record(2)
         XCTAssertEqual(2, gauge.snapshot())
     }
-    
+
     func testRate() {
         let rate = Rate()
         let n = 10000
@@ -59,12 +59,12 @@ class InstrumentTests: XCTestCase {
         XCTAssertEqual(rate.snapshot(), 0)
         XCTAssertEqual(Double(snapshot), Double(m), accuracy: Double(m)/1000)
     }
-    
+
     func calculateRate(count: Int64, time: UInt64) -> Int64 {
         let now = DispatchTime.now().uptimeNanoseconds
         return count / rateScale / Int64(now - time)
     }
-    
+
     func expectedRate(total: Int64, rate: Rate) {
         let e = calculateRate(count: total, time: rate.time.value)
         let v = calculateRate(count: rate.count.count.value, time: rate.time.value)

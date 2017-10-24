@@ -1,7 +1,6 @@
 import Dispatch
 import Foundation
 
-
 /**
  Registry is a registry of all instruments.
  */
@@ -34,7 +33,6 @@ class Registry {
             instruments.removeAll()
             semaphore.signal()
         }
-        
         return instruments
     }
 

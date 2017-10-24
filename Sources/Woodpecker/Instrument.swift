@@ -11,14 +11,13 @@ import Dispatch
  */
 protocol Instrument {}
 
-
 /**
  Discrete represents an instrument returning a discrete Int64 value.
  */
 protocol Discrete: Instrument {
     /**
      Returns the observed value for this time interval.
-     
+      
      - Important: Calling method will reset the instrument
      - returns: The observed value for this time interval
      */
@@ -50,7 +49,7 @@ class Counter: Discrete {
     init() {
         count.initialize(0)
     }
-    
+
     /**
      Returns an new Counter starting at the given value.
      
@@ -86,12 +85,12 @@ class Counter: Discrete {
 class Gauge: Discrete {
     var value = AtomicInt64()
 
-    init(_ v: Int64 = 0) {
-        value.initialize(v)
+    init(_ value: Int64 = 0) {
+        self.value.initialize(value)
     }
 
-    func record(_ v: Int64) {
-        value.store(v)
+    func record(_ value: Int64) {
+        self.value.store(value)
     }
 
     func snapshot() -> Int64 {
@@ -109,13 +108,13 @@ class Rate: Discrete {
     init() {
         time.initialize(DispatchTime.now().uptimeNanoseconds)
     }
-    
+
     init(time: DispatchTime) {
         self.time.initialize(time.uptimeNanoseconds)
     }
 
-    func record(_ v: Int64) {
-        count.increment(v)
+    func record(_ value: Int64) {
+        count.increment(value)
     }
 
     func snapshot() -> Int64 {
@@ -131,22 +130,22 @@ class Rate: Discrete {
 class Derive: Discrete {
     var rate = Rate()
     var value = AtomicInt64()
-    
+
     init(_ value: Int64) {
         self.rate = Rate()
         self.value.initialize(value)
     }
-    
+
     init(value: Int64, time: DispatchTime) {
         self.rate = Rate(time: time)
         self.value.initialize(value)
     }
-    
-    func record(_ v: Int64) {
-        let p = value.swap(v)
-        rate.record(v - p)
+
+    func record(_ value: Int64) {
+        let previous = self.value.swap(value)
+        rate.record(value - previous)
     }
-    
+
     func snapshot() -> Int64 {
         return rate.snapshot()
     }
@@ -164,19 +163,19 @@ class Reservoir: Sample {
         values = Array(repeating: 0, count: length)
     }
 
-    func record(_ v: Int64) {
+    func record(_ value: Int64) {
         semaphore.wait()
         defer { semaphore.signal() }
         size.increment()
         let l = size.value
         if l <= values.count {
             // Reservoir is not full
-            values[l-1] = v
+            values[l-1] = value
         } else {
             // Reservoir is full
             let k = nextIndex(l)
             if k < values.count {
-                values[Int(k)] = v
+                values[Int(k)] = value
             }
         }
     }
@@ -188,7 +187,7 @@ class Reservoir: Sample {
         let v = values[0..<min(l, values.count)]
         return v.sorted()
     }
-    
+
     private func nextIndex(_ upper: Int) -> Int {
         #if os(Linux)
             srandom(UInt32(time(nil)))
@@ -200,8 +199,8 @@ class Reservoir: Sample {
 }
 
 class Timing: Reservoir {
-    func since(_ t: DispatchTime) {
-        record(Int64(DispatchTime.now().uptimeNanoseconds - t.uptimeNanoseconds))
+    func since(_ time: DispatchTime) {
+        record(Int64(DispatchTime.now().uptimeNanoseconds - time.uptimeNanoseconds))
     }
 
     func time(_ closure: () -> Void) {

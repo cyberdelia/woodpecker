@@ -5,9 +5,9 @@ import XCTest
 class RegistryTests: XCTestCase {
     public static var allTests = [
         ("testRegistryCount", testRegistryCount),
-        ("testRegistrySnapshot", testRegistrySnapshot),
+        ("testRegistrySnapshot", testRegistrySnapshot)
     ]
-    
+
     override func setUp() {
         super.setUp()
     }
@@ -15,7 +15,6 @@ class RegistryTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
-
 
     func testRegistryCount() {
         let registry = Woodpecker.Registry()
@@ -30,6 +29,6 @@ class RegistryTests: XCTestCase {
         let snapshot = registry.snapshot()
         XCTAssertEqual(1, snapshot.count)
         XCTAssertEqual(0, registry.count())
-        XCTAssert(snapshot.contains { key, value in key == "count" })
+        XCTAssertTrue(snapshot.contains { key, _ in key == "count" })
     }
 }
