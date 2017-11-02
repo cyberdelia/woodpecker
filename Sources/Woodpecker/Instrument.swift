@@ -1,5 +1,5 @@
 import Atomics
-import Darwin
+import Foundation
 import Dispatch
 
 #if os(Linux)
