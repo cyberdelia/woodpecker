@@ -1,5 +1,5 @@
+import Darwin
 import Dispatch
-import Foundation
 
 /**
  Registry is a registry of all instruments.
